@@ -38,12 +38,14 @@ contract DollarCost is usingOraclize{
        
    return;
     }
-        else{
         
+   
+   else{
+         
         //Если ср-в хватило, отправляем запрос в ораклайзер
        
    oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD), result.XETHZUSD.c.[0]");
-       }
-   }
+  }
+ }
 }
 
