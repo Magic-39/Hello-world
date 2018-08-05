@@ -25,10 +25,12 @@ contract DollarCost is usingOraclize{
    
    dollarCost = parseInt(result, 3);
     }
+    
      //(функция вызова ораклайзера)
     
    function updatePrise() public payable {
-        //Проверка наличия ср-в для оплаты ораклайзера
+       
+       //Проверка наличия ср-в для оплаты ораклайзера
       
    if (oraclize_getPrice("URL") > this.balance){ 
        
