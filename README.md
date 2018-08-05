@@ -1,94 +1,29 @@
 pragma solidity ^0.4.11;
+//Подключаем библиотеку
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+//Объявляем контракт
+contract DollarCost is usingOraclize{
 
-contract LessSimpleContract {
-
-
-    //Переменная donator хранит значение типа Адрес
-    
-    address public donator;
-    
-    //Переменная owner, в которой будет храниться имя владельца смарт контракта.
-    
-    address public owner;
-    
-    //Переменная value, которая содержит купленное пользователем значение.
-    
-    uint public value;
-
-    //Объявляем переменную LastTimeForDonate - время последней отправки средств в смарт-контракт. 
-    
-    uint public LastTimeForDonate;
-    
-    //Объявляем переменную LastTimeForValue - время последней отправки значения в смарт-контракт. 
-    
-    uint public LastTimeForValue;
-    
-    //Объявляем переменную timeOut - в которой хранится заранее определённое значение-120 секунд.
-    
-    uint timeOut = 120 seconds;
-    
-    //Функцйия инициализации смарт контракта
-    
-    function LessSimpleContract(){
-
-        //Присваевается в значение owner - адрес того, кто задеплоил смарт контракт.
-        
-        owner = msg.sender;
+//Устанавливаем переменную для хранения курса доллара
+    uint public dollarCost;
+    //В эту функцию отдадут результат
+    function __callback(bytes32 myid, string result){
+    //проверяем, что функцию вызывает ораклайзер
+    if (msg.sender != oraclize_cbAddress()) throw; 
+    //Обновляем переменную курса доллара
+    dollarCost = parseInt(result, 3);
     }
-    
-    //Функция для приёма эфиров
-    
-    function () payable{
-    
-    //внутри этой функции:
-        //Проверяем, что пришло достаточне кол-во эфиров.
-        
-        require(msg.value > 1 finney);
-        
-        //Проверяем, что выполнено условие по времени.
-        
-        require(LastTimeForDonate + timeOut < now);
-        
-        //Вызываем внутрюннюю функцию
-       
-       setDonator(msg.sender);
-    }
-
-    //Функция для приёма эфиров и приёма какого либо значения, и установки в ранее объявленную переменную
-    
-    function buyValue(uint _value) payable { 
-        
-        //Проверяем, что пришло достаточне кол-во эфиров.
-        
-        require(msg.value > 1 finney);
-        
-        //Проверяем, что выполнено условие по времени.
-       
-       require(LastTimeForValue + timeOut < now);
-       
-       //Вызываем внутрюннюю функцию.
-       
-       setValue (_value);
-    }
-    
-        //Функция установки нового значения
-            
-    function setValue(uint _value) internal {
-    
-                //внутри функции будет присваиваться переданное нами значение. 
-                //происходит установка нового времени переданного значения value.
-        value = _value;
-        LastTimeForValue = now;
-    }
-        //Функция установки нового адреса donator
-            
-    function setDonator(address _donator) internal{
-    
-                //внутри функции будет присваиваться переданное нами значение. 
-                //происходит установка нового времени переданного адреса donator.
-                
-        donator = _donator;
-        LastTimeForDonate = now;
+        //(функция вызова ораклайзера)
+    function updatePrise() public payable {
+        //Проверка наличия ср-в для оплаты ораклайзера
+        if (oraclize_getPrice("URL") > this.balance){ 
+         //если ср-в не хватило, завершаем выполнение
+        return;
+        }
+        else{
+        //Если ср-в хватило, отправляем запрос в ораклайзер
+        oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD), result.XETHZUSD.c.[0]");
+        }
     }
 }
 
