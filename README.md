@@ -20,11 +20,12 @@ contract DollarCost is usingOraclize{
     //проверяем, что функцию вызывает ораклайзер
    
    if (msg.sender != oraclize_cbAddress()) throw; 
+    
     //Обновляем переменную курса доллара
    
    dollarCost = parseInt(result, 3);
     }
-        //(функция вызова ораклайзера)
+     //(функция вызова ораклайзера)
     
    function updatePrise() public payable {
         //Проверка наличия ср-в для оплаты ораклайзера
@@ -32,6 +33,7 @@ contract DollarCost is usingOraclize{
    if (oraclize_getPrice("URL") > this.balance){ 
        
        //если ср-в не хватило, завершаем выполнение
+       
    return;
     }
         else{
